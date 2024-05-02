@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit"
 import authService from "./authService"
+import { extractErrorMessage } from "../../utils"
 
 const initialState = {
     user: null,
@@ -13,8 +14,7 @@ export const register = createAsyncThunk("auth/register", async(user, thunkAPI)=
     try {
         return await authService.register(user)
     } catch (error) {
-        const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
-        return thunkAPI.rejectWithValue(message)
+        return thunkAPI.rejectWithValue(extractErrorMessage(error))
     }
 })
 
@@ -30,7 +30,7 @@ export const authSlice = createSlice({
             state.isError = false
             state.isSuccess = false
             state.isLoading = false
-            state.messaage = ""
+            state.message = ""
         }
     }, 
     extraReducers: (builder) => {
@@ -47,7 +47,7 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isError = true
                 state.user = null
-                state.messaage = action.payload
+                state.message = action.payload
             })
     },
 })
