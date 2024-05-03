@@ -32,7 +32,7 @@ function Register() {
         }
 
         dispatch(reset())
-    }, [isError, isSuccess, user, message])
+    }, [isLoading, isError, isSuccess, user, message, dispatch, navigate])
 
     function handleChange(e) {
         setFormData((prevState)=> ({
