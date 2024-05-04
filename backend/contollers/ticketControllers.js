@@ -7,7 +7,16 @@ const Ticket = require('../models/ticketModel')
 // access private
 
 const getTickets = asyncHandler(async(req, res) => {
-    res.status(200).json({message: "get tickets"})
+    const user = await User.findById(req.user.id)
+
+    if(!user) {
+        res.status(401)
+        throw new Error("user not found")
+    }
+
+    const tickets = await Ticket.find({user: req.user.id})
+
+    res.status(200).json(tickets)
 })
 
 // @desc POST post a new ticket
@@ -15,7 +24,27 @@ const getTickets = asyncHandler(async(req, res) => {
 // access private
 
 const createTickets = asyncHandler(async(req, res)=> {
-    res.status(200).json({message: "create tickets"})
+    const {description, product} = req.body
+    const user = await User.findById(req.user.id)
+
+    if(!description || !product) {
+        res.status(400)
+        throw new Error("Please enter a description or product")
+    }
+
+    if(!user) {
+        res.status(401)
+        throw new Error("User not found, please register first")
+    }
+
+    const ticket = await Ticket.create({
+        description, 
+        product,
+        user: req.user.id,
+        status: "New"
+    })
+
+    res.status(201).json(ticket)
 })
 
 module.exports = {getTickets, createTickets}
