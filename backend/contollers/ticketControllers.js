@@ -47,4 +47,79 @@ const createTickets = asyncHandler(async(req, res)=> {
     res.status(201).json(ticket)
 })
 
-module.exports = {getTickets, createTickets}
+// @desc GET get current user's specific ticket
+// @route /api/ticket/:id
+// access private
+
+const getTicket = asyncHandler(async(req, res) => {
+    
+    const user = await User.findById(req.user.id)
+
+    if(!user) {
+        res.status(401)
+        throw new Error("user not found")
+    }
+
+    const ticket = await Ticket.findById(req.params.id)
+
+    if(ticket.user.toString() !== req.user.id) {
+        res.status(404)
+        throw new Error("Ticket not found")
+    }
+
+    res.status(200).json(ticket)
+})
+
+// @description DELETE a ticket
+// @route /api/ticket/:id
+// access private
+
+const deleteTicket = asyncHandler(async(req, res)=> {
+    const user = await User.findById(req.user.id)
+    const ticket = await Ticket.findById(req.params.id)
+
+    if(!user) {
+        res.status(401)
+        throw new Error("User not found")
+    }
+
+    if(!ticket) {
+        res.status(404)
+        throw new Error("Ticket not found")
+    } 
+
+    await Ticket.findByIdAndDelete(req.params.id)
+
+    res.status(200).json({success: true})
+
+})
+
+// @description UPDATE a ticket
+// @route /api/ticket/:id
+// access private
+
+const updateTicket = asyncHandler(async(req, res)=> {
+    const user = await User.findById(req.user.id)
+    const ticket = await Ticket.findById(req.params.id)
+
+    if(!user) {
+        res.status(401)
+        throw new Error("User not found")
+    }
+
+    if(!ticket) {
+        res.status(401)
+        throw new Error("Ticket not found")
+    }
+
+    if(ticket.user.toString()!== req.user.id) {
+        res.status(500)
+        throw new Error("Not authorized to update this ticket")
+    }
+
+    const updatedTicket = await Ticket.findByIdAndUpdate(req.params.id, req.body, {new:true})
+
+    res.status(200).json(updatedTicket)
+})
+
+module.exports = {getTickets, createTickets, getTicket, deleteTicket, updateTicket}
