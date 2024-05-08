@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux"
-import { getTicket } from "../features/tickets/ticketSlice"
-import { useParams } from "react-router-dom"
+import { getTicket, closeTicket } from "../features/tickets/ticketSlice"
+import { useParams, useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { toast } from "react-toastify"
 
@@ -10,6 +10,7 @@ function Ticket() {
     const dispatch = useDispatch()
     const params = useParams()
     const ticketId = params.ticketID
+    const navigate = useNavigate()
 
     useEffect(()=> {
         if(isError) {
@@ -18,6 +19,12 @@ function Ticket() {
 
         dispatch(getTicket(ticketId))
     }, [isError, message, ticketId, dispatch])
+
+    const handleClick = () => {
+        dispatch(closeTicket(ticketId))
+        toast.success("Ticket has been closed")
+        navigate("/tickets")
+    }
 
     if(isLoading) {
         return
@@ -40,6 +47,9 @@ function Ticket() {
                     <p> {ticket.description} </p>
                 </div>
             </header>
+            {ticket.status !== "closed" && (
+                <button className="btn btn-block btn-danger" onClick={handleClick}> Close ticket</button>
+            )}
         </div>
     )
 }
