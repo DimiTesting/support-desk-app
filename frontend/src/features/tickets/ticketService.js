@@ -9,6 +9,7 @@ const createTicket = async(ticketData, token) => {
         }
     }
     const response = await axios.post(API_URL, ticketData, config)
+    console.log(response.data)
     return response.data
 }
 

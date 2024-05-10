@@ -34,7 +34,7 @@ function Tickets() {
                     <div>Status</div>
                     <div></div>
                 </div>
-                    {tickets.map((ticket)=> (<TicketItem key={ticket._id} ticket={ticket}/>))}
+                    {tickets.map((ticket)=> (<TicketItem key={ticket._id} ticket={ticket} id={ticket._id}/>))}
             </div>
         </>
     )
